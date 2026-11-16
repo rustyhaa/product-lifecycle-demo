@@ -22,7 +22,7 @@ window.DATA={
   ],
   "links": {
    "review": "https://rustyhaa.github.io/import-lifecycle-demo/",
-   "disposal": null
+   "disposal": "https://disp-lifecycle-site.vercel.app/"
   }
  },
  "products": [

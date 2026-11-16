@@ -152,7 +152,7 @@ tr.sel td{background:var(--hl)}
   <div><div class="crumb"><a href="#/">요약 한 장</a> › <span id="p-dept"></span> › 상품 한 장</div>
    <h1 id="p-name"></h1><div class="chips" id="p-chips"></div></div>
   <div><div class="asof" id="p-asof"></div>
-   <div class="btns"><a class="btn" href="#/">← 요약 한 장</a><a class="btn" id="p-lk-review" target="_blank" rel="noopener">품의 추적에서 보기</a><a class="btn" id="p-lk-disp" aria-disabled="true" title="처분 화면 저장소가 비공개라 링크 자리만 둡니다">처분 화면에서 보기</a></div></div>
+   <div class="btns"><a class="btn" href="#/">← 요약 한 장</a><a class="btn" id="p-lk-review" target="_blank" rel="noopener">품의 추적에서 보기</a><a class="btn" id="p-lk-disp" target="_blank" rel="noopener">처분 화면에서 보기</a></div></div>
  </div>
  <div class="ptabs" id="p-tabs" style="margin-top:14px"></div>
  <div class="kpis" id="p-kpis"></div>
@@ -169,7 +169,7 @@ tr.sel td{background:var(--hl)}
    <div class="card"><h2>남은 재고는 어디에 있나 <small id="p-st-s"></small></h2><div id="p-split"></div><div id="p-stores"></div><div class="note" id="p-st-note"></div></div>
    <div class="card"><h2>사건 <small>규칙(경보·판정)에 걸린 주</small></h2><ul class="evl" id="p-events"></ul></div>
    <div class="card"><h2>앞단 <small>품의</small></h2><div class="one" id="p-front"></div><div class="link" id="p-front-lk"></div></div>
-   <div class="card"><h2>뒷단 <small>처분</small></h2><div id="p-back"></div><div class="link"><span class="off">처분 화면에서 자세히 보기 (비공개 저장소 · 자리만)</span><span class="off">→</span></div></div>
+   <div class="card"><h2>뒷단 <small>처분</small></h2><div id="p-back"></div><div class="link" id="p-back-lk"></div></div>
   </div>
  </div>
  <div class="foot">가상 데이터로 만든 목업입니다. 실제 상품이 아닙니다. 품의의 자세한 숫자와 처분의 배수·판정은 기존 두 화면에 맡기고, 이 화면은 같은 시간축에 상품의 전체 이력을 놓는 데 집중합니다.</div>
@@ -348,6 +348,9 @@ function renderProduct(D,id){
   $('p-front-lk').innerHTML=`<a href="${m.links.review}" target="_blank" rel="noopener">품의 추적에서 자세히 보기</a><a href="${m.links.review}" target="_blank" rel="noopener">→</a>`}
  else{$('p-front').innerHTML=`품의 대상이 아닌 상품입니다 (${p.source}).`;$('p-front-lk').innerHTML=`<span class="off">품의 추적 화면 해당 없음</span><span class="off">→</span>`}
  // 뒷단
+ const dl=$('p-lk-disp'),dU=m.links.disposal;
+ if(dU){dl.href=dU;dl.removeAttribute('aria-disabled');dl.title='처분 화면(새 창)';$('p-back-lk').innerHTML=`<a href="${dU}" target="_blank" rel="noopener">처분 화면에서 자세히 보기</a><a href="${dU}" target="_blank" rel="noopener">→</a>`}
+ else{dl.removeAttribute('href');dl.setAttribute('aria-disabled','true');dl.title='처분 화면 링크 없음';$('p-back-lk').innerHTML=`<span class="off">처분 화면 링크 없음</span><span class="off">→</span>`}
  if(p.disposal.length){const d=p.disposal[p.disposal.length-1],vc=p.stores.verdict_counts||{};
   $('p-back').innerHTML=`<div class="one">처분 ${d.round}차 · ${d.from}주 시작 · ${W[last]-d.from+1}주째 · 처분 중인 점포 <b>${f(sum(Object.values(vc)))}곳</b></div><div class="vd"><span><b class="i-good">${vc['반응']||0}</b>반응</span><span><b class="i-bad">${vc['무반응']||0}</b>무반응</span><span><b>${vc['보류']||0}</b>보류</span></div>`}
  else $('p-back').innerHTML=`<div class="one"><span class="bad">처분 미등록</span> · 체화 편입 ${p.chehwa_from}주, ${W[last]-p.chehwa_from+1}주째 · 체화 ${man(chwNow)}만원</div>`;
