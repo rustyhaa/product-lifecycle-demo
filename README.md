@@ -7,4 +7,6 @@
 - `index.html`: 요약 한 장 ↔ 상품 한 장 (해시 이동, 밝은/어두운 판)
 - `data.json`: 화면이 읽는 유일한 데이터 (`data.js`는 파일로 바로 열 때 쓰는 같은 내용 사본)
 
+상품 8개는 판매 수명 유형 6가지(① 정점이 초반·이후 하락, ② 완만 상승·유지, ③ 계절성, ④ 하락 후 재상승, ⑤ 실적이 짧은 신상품, ⑥ 행사 급등)마다 1~2개씩 만든 가상 상품입니다. [품의 추적](https://rustyhaa.github.io/import-lifecycle-demo/)·[처분 화면](https://disp-lifecycle-site.vercel.app/)과 같은 상품이라, 각 화면의 링크가 같은 상품으로 이어집니다.
+
 GitHub Pages로 열거나, 내려받아 `index.html`을 더블클릭하면 됩니다.

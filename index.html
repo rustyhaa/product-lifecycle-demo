@@ -73,6 +73,8 @@ h1 small{font-size:18px;color:var(--mut);font-weight:500;margin-left:8px}
 /* 상품 */
 .ptabs{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 16px}
 .ptabs a{font-size:12.5px;text-decoration:none;color:var(--ink2);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:5px 11px}
+.ptabs .tn{display:inline-flex;width:17px;height:17px;border-radius:50%;background:var(--tile);color:var(--ink2);font-style:normal;font-size:11px;font-weight:700;align-items:center;justify-content:center;margin-right:6px}
+.ptabs a.on .tn{background:var(--card);color:var(--ink)}
 .ptabs a.on{background:var(--ink);color:var(--card);border-color:var(--ink);font-weight:600}
 .btns{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:8px}
 .btn{font-size:12.5px;border:1px solid var(--line);color:var(--link);border-radius:8px;padding:6px 12px;font-weight:600;background:var(--card);text-decoration:none}
@@ -107,6 +109,7 @@ tr.sel td{background:var(--hl)}
 .evl li:hover,.evl li.on{background:var(--hl)}
 .evl .n{width:22px;height:22px;border-radius:50%;background:var(--ink);color:var(--card);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
 .evl li.k-alert .n,.evl li.k-chehwa .n{background:var(--bad);color:#fff}
+.evl li.k-good .n{background:var(--good);color:#fff}
 .evl b{font-size:13px;font-weight:600}.evl span{display:block;font-size:12px;color:var(--ink2)}
 .foot{font-size:12px;color:var(--mut);margin-top:16px}
 .hidden{display:none!important}
@@ -186,6 +189,9 @@ const man=w=>f(w/1e4);                       // 원 → 만원
 const eok=(w,d=1)=>(w/1e8).toFixed(d);        // 원 → 억원
 const sgn=(v,s)=>(v>=0?'+':'−')+s(Math.abs(v));
 const sum=a=>a.reduce((x,y)=>x+y,0);
+const wl=s=>{const y=s<=52?25:26,w=s<=52?s:s-52;return `'${y} W${String(w).padStart(2,'0')}`};   // 일련번호 → '26 W45
+const isow=s=>s<=52?s:s-52;
+const inChw=(p,w)=>(p.chehwa||[]).some(c=>c.from<=w&&w<=c.to);
 const ga=s=>{const c=s.charCodeAt(s.length-1);return s+((c>=0xAC00&&c<=0xD7A3&&(c-0xAC00)%28)?'이':'가')};   // 이/가
 const css=v=>getComputedStyle(document.documentElement).getPropertyValue('--'+v).trim();
 const COLS=['ink','ink2','mut','line','card','tile','ctr','sto','bad','promo','good','neu','down','link','k-review','k-exception','k-auto','k-store'];
@@ -233,8 +239,8 @@ function renderHome(D){
  const up=S.depts.filter(d=>d.delta>0),top2=up.slice(0,2),share2=sum(top2.map(d=>d.delta))/sum(up.map(d=>d.delta));
  const paths=Object.entries(S.path).sort((a,b)=>b[1]-a[1]),pathSum=sum(paths.map(p=>p[1]));
  const listIn=sum(S.items.map(i=>i.pin)),allIn=sum(S.inn);
- $('h-asof').innerHTML=`${m.year}년 ${m.summary_from_week}주~${m.summary_to_week}주 · 전 점포 + 센터 · 원가 기준`;
- $('h-lead').innerHTML=`12주 동안 체화재고가 <b class="r">${eok(Math.abs(net))}억 ${net>=0?'늘어':'줄어'} ${f(end/1e8)}억</b>이 됐습니다. 증가분의 ${Math.round(share2*100)}%가 <b>${top2.map(d=>d.dept).join('·')}</b>에서 나왔고, 입고 유형으로는 <b>${paths[0][0]}</b>${ga(paths[0][0]).slice(-1)} 가장 큽니다. <span class="m">목록의 ${S.items.length}개 상품이 신규 편입의 ${Math.round(listIn/allIn*100)}%이고, 나머지는 ${f(S.nOthers)}개 상품에 흩어져 있습니다.</span>`;
+ $('h-asof').innerHTML=`${wl(m.summary_from_week)}~${wl(m.summary_to_week)} · 전 점포 + 센터 · 원가 기준`;
+ $('h-lead').innerHTML=`12주 동안 체화재고가 <b class="r">${eok(Math.abs(net))}억 ${net>=0?'늘어':'줄어'} ${f(end/1e8)}억</b>이 됐습니다. 증가분의 ${Math.round(share2*100)}%가 <b>${top2.map(d=>d.dept).join('·')}</b>에서 나왔고, 입고 유형으로는 <b>${paths[0][0]}</b>${ga(paths[0][0]).slice(-1)} 가장 큽니다. <span class="m">상품 한 장이 있는 ${S.items.length}개 상품이 신규 편입의 ${Math.round(listIn/allIn*100)}%이고, 나머지는 ${f(S.nOthers)}개 상품에 흩어져 있습니다.</span>`;
  const K=[['체화재고 총액',f(end/1e8),'억원',`12주 전 ${f(start/1e8)}억`,'hot'],['12주 순증',sgn(net,v=>eok(v)),'억원',`편입 ${eok(sum(S.inn))} · 처리 ${eok(sum(S.out))}`,net>0?'hot':''],
   ['이번 주 신규 편입',eok(S.inn[last]),'억원',`12주 평균 ${eok(sum(S.inn)/12)}`,''],['이번 주 처리',eok(S.out[last]),'억원',`12주 평균 ${eok(sum(S.out)/12)}`,''],
   ['목표까지',sgn(end-S.target,v=>eok(v)),'억원',`목표 ${f(S.target/1e8)}억`,'']];
@@ -253,11 +259,11 @@ function renderHome(D){
   const pk=S.inn.indexOf(Math.max(...S.inn));el('text',{x:X(pk),y:z-S.inn[pk]*sc-7,'text-anchor':'middle','font-size':12,'font-weight':600,fill:C.ink},'+'+eok(S.inn[pk]));
   if(pk!==last)el('text',{x:X(last),y:z-S.inn[last]*sc-7,'text-anchor':'middle','font-size':12,fill:C.ink2},'+'+eok(S.inn[last]));
   el('text',{x:X(last),y:z+S.out[last]*sc+16,'text-anchor':'middle','font-size':12,fill:C.ink2},'−'+eok(S.out[last]));
-  [0,3,6,9,n-1].forEach(i=>el('text',{x:X(i),y:372,'text-anchor':'middle','font-size':11.5,fill:C.mut},S.W[i]+'주'));
+  [0,3,6,9,n-1].forEach(i=>el('text',{x:X(i),y:372,'text-anchor':'middle','font-size':11.5,fill:C.mut},wl(S.W[i])));
   // 막대 hover
   S.W.forEach((w,i)=>{const r=el('rect',{x:X(i)-(R-L)/n/2,y:10,width:(R-L)/n,height:350,fill:'transparent'});
    r.addEventListener('mouseenter',()=>{hov.innerHTML='';const h=mk(hov);h('rect',{x:X(i)-(R-L)/n/2,y:10,width:(R-L)/n,height:350,fill:C.ink,opacity:.05});
-    const t=`${w}주 · 총액 ${eok(tv[i])}억 · 편입 +${eok(S.inn[i])} · 처리 −${eok(S.out[i])}`;const tx=h('text',{x:L,y:156,'font-size':12,'font-weight':600,fill:C.ink},t)});
+    const t=`${wl(w)} · 총액 ${eok(tv[i])}억 · 편입 +${eok(S.inn[i])} · 처리 −${eok(S.out[i])}`;const tx=h('text',{x:L,y:156,'font-size':12,'font-weight':600,fill:C.ink},t)});
    r.addEventListener('mouseleave',()=>hov.innerHTML='')});
  })();
  // 입고 유형
@@ -282,17 +288,17 @@ function renderHome(D){
   el('text',{x:zero+6,y:rh*S.depts.length+24,'font-size':11.5,fill:C.mut},'늘어남 →');el('text',{x:zero-6,y:rh*S.depts.length+24,'text-anchor':'end','font-size':11.5,fill:C.mut},'← 줄어듦');
   el('text',{x:0,y:rh*S.depts.length+44,'font-size':11.5,fill:C.mut},'담당 옆 숫자 = 목록에 있는 상품 수')})();
  // 집중도
- $('h-conc-s').textContent=`12주 신규 편입 ${eok(allIn)}억`;$('h-conc-q').textContent=`목록 ${S.items.length}개 상품이 ${Math.round(listIn/allIn*100)}%, 나머지는 흩어져 있습니다`;
+ $('h-conc-s').textContent=`12주 신규 편입 ${eok(allIn)}억`;$('h-conc-q').textContent=`상품 한 장이 있는 ${S.items.length}개 상품이 ${Math.round(listIn/allIn*100)}%, 나머지는 흩어져 있습니다`;
  (()=>{const svg=$('h-conc');svg.innerHTML='';const el=mk(svg),Wd=460,a=Math.max(6,Wd*listIn/allIn-2);
   el('rect',{x:0,y:30,width:a,height:26,rx:4,fill:C.bad});el('rect',{x:a+2,y:30,width:Wd-a-2,height:26,rx:4,fill:C.neu});
-  el('text',{x:0,y:18,'font-size':12,fill:C.ink2},`목록 ${S.items.length}개 상품 ${Math.round(listIn/allIn*100)}%`);el('text',{x:Wd,y:18,'text-anchor':'end','font-size':12,fill:C.ink2},`나머지 ${f(S.nOthers)}개 상품 ${100-Math.round(listIn/allIn*100)}%`);
+  el('text',{x:0,y:18,'font-size':12,fill:C.ink2},`상품 한 장 ${S.items.length}개 ${Math.round(listIn/allIn*100)}%`);el('text',{x:Wd,y:18,'text-anchor':'end','font-size':12,fill:C.ink2},`나머지 ${f(S.nOthers)}개 상품 ${100-Math.round(listIn/allIn*100)}%`);
   el('text',{x:0,y:80,'font-size':12,fill:C.mut},`상품당 ${man(listIn/S.items.length)}만원`);el('text',{x:Wd,y:80,'text-anchor':'end','font-size':12,fill:C.mut},`상품당 ${man((allIn-listIn)/S.nOthers)}만원 · 합계 ${eok(allIn-listIn)}억`)})();
  // 목록
- const shown=S.items.filter(i=>!deptFilter||i.p.dept===deptFilter);
+ const shown=S.items.filter(i=>i.delta>0&&(!deptFilter||i.p.dept===deptFilter));
  $('h-filt').style.display=deptFilter?'block':'none';$('h-filt').innerHTML=deptFilter?`${deptFilter}만 보는 중<button type="button" id="h-clr">전체 보기</button>`:'';
  if(deptFilter)$('h-clr').onclick=()=>{deptFilter=null;renderHome(D)};
  $('h-list').innerHTML=shown.length?shown.map(it=>{const r=S.items.indexOf(it)+1,p=it.p;
-  return `<a class="item" href="#/p/${p.id}" data-pid="${p.id}"><div class="rk">${r}</div><div><b>${p.name}</b> <span class="c">${p.dept} · ${p.source}</span><br><span class="chip c-bad">${p.headline}</span></div><div class="amt"><span data-k="now" style="color:var(--ink);font-size:13.5px;font-weight:600">${man(it.now)}만원</span><span data-k="delta">12주 ${sgn(it.delta,man)}만원</span></div></a>`}).join('')
+  return `<a class="item" href="#/p/${p.id}" data-pid="${p.id}"><div class="rk">${r}</div><div><b>${p.name}</b> <span class="c">${p.dept} · 유형 ${p.type_no}</span><br><span class="chip c-bad">${p.headline}</span></div><div class="amt"><span data-k="now" style="color:var(--ink);font-size:13.5px;font-weight:600">${man(it.now)}만원</span><span data-k="delta">12주 ${sgn(it.delta,man)}만원</span></div></a>`}).join('')
   :`<div class="note">이 담당에는 상품 한 장 예시가 없습니다(담당 합계에만 들어 있음).</div>`;
 }
 
@@ -314,21 +320,22 @@ function renderProduct(D,id){
  $('p-dept').textContent=p.dept;
  $('p-name').innerHTML=`${p.name}<small>가상 상품 · ${p.id}</small>`;
  const stNow=segAt(p.status,W[last]),dNow=segAt(p.disposal,W[last]);
- $('p-chips').innerHTML=[`<span class="chip c-neu">${p.source}</span>`,`<span class="chip c-neu">${p.dept}</span>`,`<span class="chip c-neu">운영 점포 ${f(p.n_stores)}</span>`,
+ const lastD=p.disposal[p.disposal.length-1];
+ $('p-chips').innerHTML=[`<span class="chip" style="background:var(--ink);color:var(--card)">유형 ${p.type_no} · ${p.type_name}</span>`,`<span class="chip c-neu">${p.cat}</span>`,`<span class="chip c-neu">${p.dept}</span>`,`<span class="chip c-neu">운영 점포 ${f(p.n_stores)}</span>`,
   stNow?`<span class="chip c-neu">${stNow.label} ${W[last]-stNow.from+1}주째</span>`:'',
-  dNow?`<span class="chip c-bad">처분 ${dNow.round}차 진행 중</span>`:`<span class="chip c-bad">체화 · 처분 미등록</span>`].join('');
- $('p-asof').textContent=`${m.year}년 ${m.as_of_week}주 기준 · 전 점포 + 센터`;
- const lr=$('p-lk-review');if(p.review){lr.href=m.links.review;lr.removeAttribute('aria-disabled');lr.title=`품의 ${p.review.no}`}else{lr.removeAttribute('href');lr.setAttribute('aria-disabled','true');lr.title='품의 대상이 아닌 상품'}
- $('p-tabs').innerHTML=D.products.map(x=>`<a href="#/p/${x.id}" class="${x.id===p.id?'on':''}">${x.name}</a>`).join('');
+  dNow?`<span class="chip c-bad">처분 ${dNow.round}차 진행 중</span>`:inChw(p,W[last])?`<span class="chip c-bad">체화 · 처분 미등록</span>`:lastD?`<span class="chip c-neu">처분 이력 ${p.disposal.length}회 (종료)</span>`:p.good?`<span class="chip c-good">체화 없음</span>`:''].join('');
+ $('p-asof').textContent=`${wl(m.as_of_week)} 기준 · 전 점포 + 센터`;
+ const lr=$('p-lk-review');if(p.review){lr.href=(p.links&&p.links.review)||m.links.review;lr.removeAttribute('aria-disabled');lr.title=`품의 ${p.review.no}`}else{lr.removeAttribute('href');lr.setAttribute('aria-disabled','true');lr.title='품의 대상이 아닌 상품'}
+ $('p-tabs').innerHTML=D.products.map(x=>`<a href="#/p/${x.id}" class="${x.id===p.id?'on':''}"><i class="tn">${x.type_no}</i>${x.name}</a>`).join('');
  // KPI
  const totIn=sum(inTot),totS=sum(p.sale);
  const K=[['현재 재고',f(tot[last]),'개',`센터 ${f(p.stock_center[last])} · 점포 ${f(p.stock_store[last])}`,''],
-  ['체화재고 금액',man(chwNow),'만원',`${p.chehwa_from}주 편입 · 12주 ${sgn(chwDelta,man)}만원`,'hot'],
+  ['체화재고 금액',man(chwNow),'만원',chwNow?`${wl(p.chehwa_from)} 편입 · 12주 ${sgn(chwDelta,man)}만원`:(p.chehwa.length?`지금 체화 없음 · 과거 ${p.chehwa.length}회`:'체화된 적 없음'),chwNow?'hot':''],
   ['입고 대비 판매',Math.round(totS/totIn*100),'%',`입고 ${f(totIn)} · 판매 ${f(totS)}`,''],
   ['점포 분산',p.stock_store[last]?Math.round(st.top5/p.stock_store[last]*100):0,'%',`상위 5곳 비중 · 나머지 ${p.stores.rest.n}곳 평균 ${(p.stores.rest.qty/p.stores.rest.n).toFixed(1)}개`,''],
-  dNow?['처분',dNow.round,'차',`${dNow.from}주 시작 · ${W[last]-dNow.from+1}주째`,'']:['처분','미등록','',`체화 편입 ${W[last]-p.chehwa_from+1}주째`,'hot']];
+  dNow?['처분',dNow.round,'차',`${wl(dNow.from)} 시작 · ${W[last]-dNow.from+1}주째`,'']:inChw(p,W[last])?['처분','미등록','',`체화 편입 ${W[last]-p.chehwa_from+1}주째`,'hot']:lastD?['처분','종료','',`${lastD.round}차 · ${wl(lastD.from)}~${wl(lastD.to)}`,'']:['처분','없음','','처분 이력 없음','']];
  $('p-kpis').innerHTML=K.map((k,i)=>`<div class="kpi ${k[4]}" data-k="${i}"><div class="l">${k[0]}</div><div class="v">${k[1]}<small>${k[2]}</small></div><div class="d">${k[3]}</div></div>`).join('');
- $('p-range').textContent=`${W[0]}주~${W[last]}주 · 개 · 체화는 만원(원가)`;
+ $('p-range').textContent=`${wl(W[0])}~${wl(W[last])} · 개 · 체화는 만원(원가)`;
  // 점포
  const sNow=p.stock_store[last],cNow=p.stock_center[last];
  $('p-st-s').textContent=`${W[last]}주 · 센터 + 점포 ${f(tot[last])}개`;
@@ -339,21 +346,22 @@ function renderProduct(D,id){
   +`<div class="srow"><span>그 외 ${p.stores.rest.n}곳</span><div><div class="sbar" style="width:100%;background:var(--neu)"></div></div><b>${f(p.stores.rest.qty)}개</b></div>`;
  $('p-st-note').textContent=sNow?`점포 재고 중 상위 5곳이 ${Math.round(st.top5/sNow*100)}%. 나머지는 점포당 평균 ${(p.stores.rest.qty/p.stores.rest.n).toFixed(1)}개씩 흩어져 있습니다.`:'점포에 남은 재고가 없습니다.';
  // 사건
- $('p-events').innerHTML=p.events.map(e=>`<li data-no="${e.no}" class="k-${e.kind} ${curEvent===e.no?'on':''}"><div class="n">${e.no}</div><div><b>${e.title}</b><span>${e.week===e.to?e.week+'주':e.week+'~'+e.to+'주'} · ${e.detail.join(' · ')}</span></div></li>`).join('');
+ $('p-events').innerHTML=p.events.map(e=>`<li data-no="${e.no}" class="k-${e.kind} ${curEvent===e.no?'on':''}"><div class="n">${e.no}</div><div><b>${e.title}</b><span>${e.week===e.to?wl(e.week):wl(e.week)+'~'+wl(e.to)} · ${e.detail.join(' · ')}</span></div></li>`).join('');
  $('p-events').querySelectorAll('li').forEach(li=>li.onclick=()=>toggleEvent(D,p,+li.dataset.no));
  // 앞단
  if(p.review){const r=p.review,si=W.indexOf(r.start_week);let cum=0,k80=null;for(let i=si;i<N;i++){cum+=p.sale[i];if(k80===null&&cum>=r.agreed_qty*.8)k80=i-si+1}
   const pct=Math.round(r.inbound_qty/r.agreed_qty*100),late=k80===null||k80>r.expected_weeks;
   $('p-front').innerHTML=`품의 <b>${r.no}</b> · 합의 <b>${f(r.agreed_qty)}개</b> → 입고 <span class="${pct>100?'bad':''}">${f(r.inbound_qty)}개 (${pct}%)</span><br>80% 판매 도달 <span class="${late?'bad':'good'}">${k80===null?`미도달 (지금 ${Math.round(cum/r.agreed_qty*100)}%)`:k80+'주'}</span> · 예상 ${r.expected_weeks}주`;
-  $('p-front-lk').innerHTML=`<a href="${m.links.review}" target="_blank" rel="noopener">품의 추적에서 자세히 보기</a><a href="${m.links.review}" target="_blank" rel="noopener">→</a>`}
+  const rU=(p.links&&p.links.review)||m.links.review;$('p-front-lk').innerHTML=`<a href="${rU}" target="_blank" rel="noopener">품의 추적에서 이 상품 보기</a><a href="${rU}" target="_blank" rel="noopener">→</a>`}
  else{$('p-front').innerHTML=`품의 대상이 아닌 상품입니다 (${p.source}).`;$('p-front-lk').innerHTML=`<span class="off">품의 추적 화면 해당 없음</span><span class="off">→</span>`}
  // 뒷단
- const dl=$('p-lk-disp'),dU=m.links.disposal;
- if(dU){dl.href=dU;dl.removeAttribute('aria-disabled');dl.title='처분 화면(새 창)';$('p-back-lk').innerHTML=`<a href="${dU}" target="_blank" rel="noopener">처분 화면에서 자세히 보기</a><a href="${dU}" target="_blank" rel="noopener">→</a>`}
+ const dl=$('p-lk-disp'),dU=(p.links&&p.links.disposal)||m.links.disposal;
+ if(dU){dl.href=dU;dl.removeAttribute('aria-disabled');dl.title='처분 화면(새 창)';$('p-back-lk').innerHTML=`<a href="${dU}" target="_blank" rel="noopener">처분 화면에서 이 상품 보기</a><a href="${dU}" target="_blank" rel="noopener">→</a>`}
  else{dl.removeAttribute('href');dl.setAttribute('aria-disabled','true');dl.title='처분 화면 링크 없음';$('p-back-lk').innerHTML=`<span class="off">처분 화면 링크 없음</span><span class="off">→</span>`}
  if(p.disposal.length){const d=p.disposal[p.disposal.length-1],vc=p.stores.verdict_counts||{};
-  $('p-back').innerHTML=`<div class="one">처분 ${d.round}차 · ${d.from}주 시작 · ${W[last]-d.from+1}주째 · 처분 중인 점포 <b>${f(sum(Object.values(vc)))}곳</b></div><div class="vd"><span><b class="i-good">${vc['반응']||0}</b>반응</span><span><b class="i-bad">${vc['무반응']||0}</b>무반응</span><span><b>${vc['보류']||0}</b>보류</span></div>`}
- else $('p-back').innerHTML=`<div class="one"><span class="bad">처분 미등록</span> · 체화 편입 ${p.chehwa_from}주, ${W[last]-p.chehwa_from+1}주째 · 체화 ${man(chwNow)}만원</div>`;
+  $('p-back').innerHTML=`<div class="one">처분 ${d.round}차(${d.kind}) · ${wl(d.from)} 시작 · ${d.ended?wl(d.to)+' 종료':(W[last]-d.from+1)+'주째'} · 처분 점포 <b>${f(sum(Object.values(vc)))}곳</b></div><div class="vd"><span><b class="i-good">${vc['반응']||0}</b>반응</span><span><b class="i-bad">${vc['무반응']||0}</b>무반응</span><span><b>${vc['보류']||0}</b>보류</span></div>`}
+ else if(inChw(p,W[last]))$('p-back').innerHTML=`<div class="one"><span class="bad">처분 미등록</span> · 체화 편입 ${wl(p.chehwa_from)}, ${W[last]-p.chehwa_from+1}주째 · 체화 ${man(chwNow)}만원</div>`;
+ else $('p-back').innerHTML=`<div class="one">처분 이력 없음 · 체화된 적 없음</div>`;
  // 그래프 / 표
  setView(curView,D,p);
 }
@@ -367,12 +375,12 @@ function toggleEvent(D,p,no){curEvent=curEvent===no?null:no;$('p-events').queryS
 function weekText(p,i,D){
  const w=p.weeks[i],st=segAt(p.status,w),pr=segAt(p.promo,w),dp=segAt(p.disposal,w),K=D.meta.kinds;
  const ib=Object.keys(p.inbound).filter(k=>p.inbound[k][i]).map(k=>`${K[k]} ${f(p.inbound[k][i])}`);
- return {w,status:st?st.label:'—',promo:pr?pr.label:'—',disp:dp?`처분 ${dp.round}차`:(w>=p.chehwa_from?'체화':'—'),
+ return {w,status:st?st.label:'—',promo:pr?pr.label:'—',disp:dp?`처분 ${dp.round}차`:(inChw(p,w)?'체화':'—'),
   inbound:ib.length?ib.join(' + '):'없음',inTot:sum(Object.values(p.inbound).map(a=>a[i])),sale:p.sale[i],ctr:p.stock_center[i],sto:p.stock_store[i],chw:p.chehwa_won[i]}
 }
 function readout(D,p,i){
  const t=weekText(p,i,D);
- $('p-readout').innerHTML=`<span><b>${t.w}주</b></span><span>상태 <b>${t.status}</b></span><span>행사 <b>${t.promo}</b></span><span>체화·처분 <b>${t.disp}</b></span><span>입고 <b>${t.inbound}</b></span><span>판매 <b>${f(t.sale)}</b></span><span><i class="sw" style="background:var(--ctr)"></i>센터 <b>${f(t.ctr)}</b> · <i class="sw" style="background:var(--sto)"></i>점포 <b>${f(t.sto)}</b></span><span>체화 <b>${t.chw?man(t.chw)+'만원':'—'}</b></span>`;
+ $('p-readout').innerHTML=`<span><b>${wl(t.w)}</b></span><span>상태 <b>${t.status}</b></span><span>행사 <b>${t.promo}</b></span><span>체화·처분 <b>${t.disp}</b></span><span>입고 <b>${t.inbound}</b></span><span>판매 <b>${f(t.sale)}</b></span><span><i class="sw" style="background:var(--ctr)"></i>센터 <b>${f(t.ctr)}</b> · <i class="sw" style="background:var(--sto)"></i>점포 <b>${f(t.sto)}</b></span><span>체화 <b>${t.chw?man(t.chw)+'만원':'—'}</b></span>`;
 }
 
 function drawChart(D,p){
@@ -381,16 +389,16 @@ function drawChart(D,p){
  const L=104,R=Wd-58,step=(R-L)/N,x=i=>L+step*(i+.5),bw=Math.max(3,step-4),ix=w=>W.indexOf(w);
  const tot=p.stock_center.map((v,i)=>v+p.stock_store[i]),inTot=W.map((_,i)=>sum(Object.values(p.inbound).map(a=>a[i])));
  // 사건 제목 줄 배치 (겹치지 않게 두 줄)
- const ANN=[18,40],rowEnd=[-1e9,-1e9],annG=el('g',{});const evPos=[];
+ const ANN=[18,40,62],rowEnd=[-1e9,-1e9,-1e9],annG=el('g',{});const evPos=[];
  p.events.forEach(e=>{const X=x(ix(e.week));const t=el('text',{x:0,y:0,'font-size':12.5,'font-weight':600,fill:C.ink},e.title,annG);const tw=t.getComputedTextLength()+20;
-  let r=rowEnd[0]<X-4?0:rowEnd[1]<X-4?1:(rowEnd[0]<=rowEnd[1]?0:1);let left=X+16>R+40-tw?true:false;
+  let left=X+16>R+40-tw;const xs=left?X-tw:X-10;let r=rowEnd.findIndex(e=>e<xs);if(r<0)r=rowEnd.indexOf(Math.min(...rowEnd));
   const x0=left?X-tw:X-10;rowEnd[r]=x0+tw+18;t.setAttribute('x',left?X-18:X+12);if(left)t.setAttribute('text-anchor','end');t.setAttribute('y',ANN[r]+4.5);evPos.push({e,X,y:ANN[r]})});
- const TOP=60,BOT=690;
+ const TOP=82,BOT=712;
  // 구간 음영 (행사·처분)
  const shade=(a,b,col,op)=>el('rect',{x:x(ix(a))-step/2,y:TOP,width:(b-a+1)*step,height:BOT-TOP,fill:col,opacity:op});
  p.promo.forEach(s=>shade(s.from,s.to,C.promo,.10));p.disposal.forEach(s=>shade(s.from,s.to,C.bad,.07));
  // 레인
- const P={band:{y:70,h:78},inb:{y:186,h:84},sal:{y:306,h:96},stk:{y:440,h:122},chw:{y:604,h:66}};
+ const P={band:{y:92,h:78},inb:{y:208,h:84},sal:{y:328,h:96},stk:{y:462,h:122},chw:{y:626,h:66}};
  const lab=(q,t,u)=>{el('text',{x:0,y:q.y+13,'font-size':13,'font-weight':600,fill:C.ink},t);if(u)el('text',{x:0,y:q.y+31,'font-size':11.5,fill:C.mut},u)};
  const legend=(q,items)=>{let X=R;items.slice().reverse().forEach(([t,col])=>{const tx=el('text',{x:0,y:q.y-9,'font-size':11.5,fill:C.ink2},t);const w=tx.getComputedTextLength();X-=w;tx.setAttribute('x',X);X-=14;el('rect',{x:X,y:q.y-18,width:9,height:9,rx:2.5,fill:col});X-=14})};
  const axis=(q,max,fmt)=>{fmt=fmt||(t=>t>=1e4?f(t/1e4)+'만':f(t));[0,max/2,max].forEach(t=>{const yy=q.y+q.h-q.h*t/max;el('line',{x1:L,x2:R,y1:yy,y2:yy,stroke:C.line,'stroke-width':1});el('text',{x:R+8,y:yy+4,'font-size':11,fill:C.mut},fmt(t))});return v=>q.y+q.h-q.h*v/max};
@@ -400,9 +408,9 @@ function drawChart(D,p){
   const t=el('text',{x:x0+8,y:y+15,'font-size':12,fill:ink,'font-weight':600},label);if(t.getComputedTextLength()>w-12)t.textContent=label.slice(0,Math.max(1,Math.floor((w-12)/12)))};
  p.status.forEach((s,k)=>band(0,s.from,s.to,s.label==='발주종료'?C.neu:C.tile,s.label,C.ink,s.label==='발주종료'?null:C.line));
  p.promo.forEach(s=>band(1,s.from,s.to,C.promo,(s.to-s.from+1)*step>150?'행사 · '+s.label:'행사','#16223D'));
- const dFrom=p.disposal.length?p.disposal[0].from:W[last]+1;
- if(dFrom>p.chehwa_from)band(2,p.chehwa_from,Math.min(W[last],dFrom-1),css('badbg'),'체화',css('badink'),C.bad);
+ (p.chehwa||[]).forEach(c=>{const d=p.disposal.find(x=>x.from>=c.from&&x.from<=c.to+1),e=d?d.from-1:c.to;if(e>=c.from)band(2,c.from,e,css('badbg'),'체화',css('badink'),C.bad)});
  p.disposal.forEach(s=>band(2,s.from,s.to,C.bad,`처분 ${s.round}차`,'#fff'));
+ if(!(p.chehwa||[]).length&&!p.disposal.length)el('text',{x:L+6,y:P.band.y+2*27+15,'font-size':12,fill:C.mut},'체화·처분 없음');
  // 입고
  lab(P.inb,'입고','개 · 발주 주체');
  const kinds=['review','exception','auto','store'].filter(k=>sum(p.inbound[k])>0);
@@ -410,7 +418,7 @@ function drawChart(D,p){
  const yI=axis(P.inb,niceMax(Math.max(...inTot)));
  for(let i=0;i<N;i++){let base=P.inb.y+P.inb.h;kinds.forEach(k=>{const v=p.inbound[k][i];if(v>0){const h=Math.max(3,P.inb.y+P.inb.h-yI(v));rbar(el,x(i)-bw/2,base-h,bw,h,C['k-'+k]);base-=h+2}})}
  const bigIn=W.map((_,i)=>i).filter(i=>inTot[i]>=Math.max(...inTot)*.35);
- bigIn.forEach(i=>{const lbl=f(inTot[i]),pos=yI(inTot[i])-6;const t=el('text',{x:x(i),y:Math.max(P.inb.y+8,pos),'text-anchor':'middle','font-size':11.5,fill:C.ink2},lbl)});
+ let lastLbl=-9;bigIn.forEach(i=>{if(i-lastLbl<4)return;lastLbl=i;const lbl=f(inTot[i]),pos=yI(inTot[i])-6;const t=el('text',{x:x(i),y:Math.max(P.inb.y+8,pos),'text-anchor':'middle','font-size':11.5,fill:C.ink2},lbl)});
  // 판매
  lab(P.sal,'판매','개 / 주');legend(P.sal,[['평소',C.neu],...(p.promo.length?[['행사 중',C.promo]]:[]),...(p.disposal.length?[['처분 중',C.bad]]:[])]);
  const yS=axis(P.sal,niceMax(Math.max(...p.sale)));
@@ -427,24 +435,24 @@ function drawChart(D,p){
  const mxi=tot.indexOf(Math.max(...tot));el('text',{x:x(mxi)+8,y:yK(tot[mxi])-8,'font-size':12,fill:C.ink2},'최대 '+f(tot[mxi])+'개');
  // 체화
  lab(P.chw,'체화재고','만원 · 원가');
- const chv=p.chehwa_won,cmax=niceMax(Math.max(...chv)),yC=axis(P.chw,cmax,t=>t>=1e8?(t/1e8).toFixed(t%1e8?1:0)+'억':man(t)+'만'),ci=ix(p.chehwa_from);
- let cl='';for(let i=ci;i<N;i++)cl+=(i>ci?'L':'M')+x(i)+','+yC(chv[i]);
- el('path',{d:cl+`L${x(last)},${yC(0)}L${x(ci)},${yC(0)}Z`,fill:C.bad,opacity:.14});el('path',{d:cl,fill:'none',stroke:C.bad,'stroke-width':2,'stroke-linejoin':'round'});
- [ci,last].forEach(i=>el('circle',{cx:x(i),cy:yC(chv[i]),r:4.5,fill:C.bad,stroke:C.card,'stroke-width':2}));
- el('text',{x:x(ci)-10,y:yC(chv[ci])+4,'text-anchor':'end','font-size':12,fill:C.ink2},`편입 ${man(chv[ci])}만원`);
- el('text',{x:x(last)-10,y:yC(chv[last])+18,'text-anchor':'end','font-size':12,'font-weight':600,fill:C.ink},`${man(chv[last])}만원`);
- if(ci>6)el('text',{x:x(Math.floor(ci/2)),y:yC(cmax/2)+4,'text-anchor':'middle','font-size':12,fill:C.mut},`${p.chehwa_from}주 전에는 체화 아님`);
+ const chv=p.chehwa_won,cmax=niceMax(Math.max(1e6,...chv)),yC=axis(P.chw,cmax,t=>t>=1e8?(t/1e8).toFixed(t%1e8?1:0)+'억':man(t)+'만');
+ (p.chehwa||[]).forEach(c=>{const a=ix(c.from),b=ix(c.to);if(b<a)return;let cl='';for(let i=a;i<=b;i++)cl+=(i>a?'L':'M')+x(i)+','+yC(chv[i]);
+  el('path',{d:cl+`L${x(b)},${yC(0)}L${x(a)},${yC(0)}Z`,fill:C.bad,opacity:.14});el('path',{d:cl,fill:'none',stroke:C.bad,'stroke-width':2,'stroke-linejoin':'round'});
+  [a,b].forEach(i=>el('circle',{cx:x(i),cy:yC(chv[i]),r:4,fill:C.bad,stroke:C.card,'stroke-width':2}));
+  el('text',{x:x(a)-8,y:yC(chv[a])+4,'text-anchor':'end','font-size':12,fill:C.ink2},`편입 ${man(chv[a])}만원`);
+  if(b===last)el('text',{x:x(b)-10,y:yC(chv[b])+18,'text-anchor':'end','font-size':12,'font-weight':600,fill:C.ink},`${man(chv[b])}만원`)});
+ if(!(p.chehwa||[]).length)el('text',{x:(L+R)/2,y:yC(cmax/2)+4,'text-anchor':'middle','font-size':12,fill:C.mut},'체화된 적 없음');
  // 주 축
- for(let i=0;i<N;i++)if(W[i]%5===0||i===last)el('text',{x:x(i),y:BOT+22,'text-anchor':'middle','font-size':11.5,fill:C.mut},W[i]+'주');
+ for(let i=0;i<N;i++)if([1,14,27,40].includes(isow(W[i]))||i===last)el('text',{x:x(i),y:BOT+22,'text-anchor':'middle','font-size':11.5,fill:C.mut},wl(W[i]));
  // 사건 번호와 세로선 (선택한 구간 강조)
  const selG=el('g',{});
  if(curEvent){const e=p.events.find(v=>v.no===curEvent);if(e){const a=x(ix(e.week))-step/2,b=x(ix(e.to))+step/2;
   el('rect',{x:L-2,y:TOP,width:a-L+2,height:BOT-TOP,fill:C.card,opacity:.62},null,selG);el('rect',{x:b,y:TOP,width:R-b+2,height:BOT-TOP,fill:C.card,opacity:.62},null,selG);
   el('rect',{x:a,y:TOP-4,width:b-a,height:BOT-TOP+8,fill:'none',stroke:C.ink,'stroke-width':1.5,'stroke-dasharray':'4 3',rx:4},null,selG)}}
- evPos.forEach(({e,X,y})=>{const on=curEvent===e.no,g=el('g',{style:'cursor:pointer'});const red=e.kind==='alert'||e.kind==='chehwa';
+ evPos.forEach(({e,X,y})=>{const on=curEvent===e.no,g=el('g',{style:'cursor:pointer'});const red=e.kind==='alert'||e.kind==='chehwa',grn=e.kind==='good';
   el('line',{x1:X,x2:X,y1:y+11,y2:BOT,stroke:C.mut,'stroke-width':1,'stroke-dasharray':'2 4',opacity:curEvent&&!on?.3:1},null,g);
-  el('circle',{cx:X,cy:y,r:10,fill:red?C.bad:C.ink,stroke:on?C.promo:C.card,'stroke-width':on?3:2},null,g);
-  el('text',{x:X,y:y+4,'text-anchor':'middle','font-size':11.5,'font-weight':700,fill:red?'#fff':C.card},e.no,g);
+  el('circle',{cx:X,cy:y,r:10,fill:red?C.bad:grn?C.good:C.ink,stroke:on?C.promo:C.card,'stroke-width':on?3:2},null,g);
+  el('text',{x:X,y:y+4,'text-anchor':'middle','font-size':11.5,'font-weight':700,fill:red||grn?'#fff':C.card},e.no,g);
   el('rect',{x:X-14,y:y-14,width:28,height:28,fill:'transparent'},null,g);
   g.addEventListener('click',ev=>{ev.stopPropagation();toggleEvent(D,p,e.no)})});
  svg.setAttribute('height',BOT+34);svg.setAttribute('width',Wd);svg.setAttribute('viewBox',`0 0 ${Wd} ${BOT+34}`);
@@ -454,7 +462,7 @@ function drawChart(D,p){
   let x0=X+10;if(x0+w>R+50)x0=X-10-w;mk(svg)('rect',{x:x0,y:y-10,width:w,height:21,rx:6,fill:C.card,stroke:C.line},null,g);g.appendChild(t);t.setAttribute('x',x0+7)};
  const drawHover=i=>{hov.innerHTML='';const X=x(i),t=weekText(p,i,D),h=mk(svg);
   h('rect',{x:X-step/2,y:TOP,width:step,height:BOT-TOP,fill:C.ink,opacity:.06},null,hov);h('line',{x1:X,x2:X,y1:TOP,y2:BOT,stroke:C.ink,'stroke-width':1,opacity:.5},null,hov);
-  pill(X,P.band.y+P.band.h/2,`${t.w}주 · ${t.status}${t.promo!=='—'?' · 행사':''}${t.disp!=='—'?' · '+t.disp:''}`,true);
+  pill(X,P.band.y+P.band.h/2,`${wl(t.w)} · ${t.status}${t.promo!=='—'?' · 행사':''}${t.disp!=='—'?' · '+t.disp:''}`,true);
   pill(X,P.inb.y+14,t.inTot?`입고 ${f(t.inTot)}개`:'입고 없음');
   pill(X,P.sal.y+14,`판매 ${f(t.sale)}개`);
   h('circle',{cx:X,cy:yK(tot[i]),r:4,fill:C.ctr,stroke:C.card,'stroke-width':2},null,hov);
@@ -476,7 +484,7 @@ function drawTable(D,p){
  const K=D.meta.kinds,kinds=Object.keys(p.inbound).filter(k=>sum(p.inbound[k])>0),e=curEvent?p.events.find(v=>v.no===curEvent):null;
  const first=p.weeks.findIndex((w,i)=>p.sale[i]||p.stock_center[i]||p.stock_store[i]||Object.values(p.inbound).some(a=>a[i]));
  const rows=p.weeks.map((w,i)=>{if(i<first)return '';const t=weekText(p,i,D),sel=e&&w>=e.week&&w<=e.to;
-  return `<tr class="${sel?'sel':''}"><td>${w}주</td><td class="t">${t.status}</td><td class="t">${t.promo}</td><td class="t">${t.disp}</td>${kinds.map(k=>`<td>${p.inbound[k][i]?f(p.inbound[k][i]):''}</td>`).join('')}<td>${f(t.sale)}</td><td>${f(t.ctr)}</td><td>${f(t.sto)}</td><td>${t.chw?man(t.chw):''}</td></tr>`}).join('');
+  return `<tr class="${sel?'sel':''}"><td>${wl(w)}</td><td class="t">${t.status}</td><td class="t">${t.promo}</td><td class="t">${t.disp}</td>${kinds.map(k=>`<td>${p.inbound[k][i]?f(p.inbound[k][i]):''}</td>`).join('')}<td>${f(t.sale)}</td><td>${f(t.ctr)}</td><td>${f(t.sto)}</td><td>${t.chw?man(t.chw):''}</td></tr>`}).join('');
  $('p-table').innerHTML=`<table><thead><tr><th>주</th><th class="t">상태</th><th class="t">행사</th><th class="t">체화·처분</th>${kinds.map(k=>`<th>입고·${K[k]}</th>`).join('')}<th>판매</th><th>센터 재고</th><th>점포 재고</th><th>체화(만원)</th></tr></thead><tbody>${rows}</tbody></table>`;
 }
 
