@@ -37,9 +37,9 @@ window.DATA={
  "products": [
   {
    "id": "P01",
-   "name": "멸균우유 24입",
-   "dept": "냉동·유제품",
-   "cat": "우유",
+   "name": "미니 블루투스 스피커",
+   "dept": "가전",
+   "cat": "소형가전",
    "source": "직매입",
    "type_no": 1,
    "type_name": "정점이 초반, 이후 하락",
@@ -2202,20 +2202,20 @@ window.DATA={
    },
    "links": {
     "review": "https://rustyhaa.github.io/import-lifecycle-demo/#SR-2536-01",
-    "disposal": "https://rustyhaa.github.io/disp-lifecycle-site/index.html#item=멸균우유 24입"
+    "disposal": "https://rustyhaa.github.io/disp-lifecycle-site/index.html#item=미니 블루투스 스피커"
    }
   },
   {
    "id": "P02",
-   "name": "바닐라 바 아이스크림",
-   "dept": "냉동·유제품",
-   "cat": "아이스크림",
+   "name": "대용량 세탁세제 리필",
+   "dept": "일상용품",
+   "cat": "세탁세제",
    "source": "직매입",
    "type_no": 2,
    "type_name": "완만 상승·유지",
    "good": true,
    "n_stores": 114,
-   "cost_won": 4200,
+   "cost_won": 7800,
    "headline": "수요를 따라 자동발주, 체화 없음",
    "chehwa_path": "행사 매입",
    "chehwa": [],
@@ -3497,20 +3497,20 @@ window.DATA={
    },
    "links": {
     "review": "https://rustyhaa.github.io/import-lifecycle-demo/#SR-2506-02",
-    "disposal": "https://rustyhaa.github.io/disp-lifecycle-site/lifecycle.html#item=바닐라 바 아이스크림"
+    "disposal": "https://rustyhaa.github.io/disp-lifecycle-site/lifecycle.html#item=대용량 세탁세제 리필"
    }
   },
   {
    "id": "P03",
-   "name": "초코 콘 아이스크림",
-   "dept": "냉동·유제품",
-   "cat": "아이스크림",
+   "name": "휴대용 손선풍기",
+   "dept": "가전",
+   "cat": "소형가전",
    "source": "직매입",
    "type_no": 3,
    "type_name": "계절성(여름 정점)",
    "good": false,
    "n_stores": 110,
-   "cost_won": 5600,
+   "cost_won": 6500,
    "headline": "정점 지난 뒤 예외발주, 2년 연속",
    "chehwa_path": "바이어 예외발주",
    "chehwa": [
@@ -4362,14 +4362,14 @@ window.DATA={
     0,
     0,
     0,
-    66724000,
-    64640800,
-    62120800,
-    59880800,
-    57696800,
-    55809600,
-    53939200,
-    52080000,
+    77447500,
+    75029500,
+    72104500,
+    69504500,
+    66969500,
+    64779000,
+    62608000,
+    60450000,
     0,
     0,
     0,
@@ -4412,10 +4412,10 @@ window.DATA={
     0,
     0,
     0,
-    55204800,
-    52556000,
-    48703200,
-    45494400
+    64077000,
+    61002500,
+    56530500,
+    52806000
    ],
    "status": [
     {
@@ -4438,12 +4438,12 @@ window.DATA={
     {
      "from": 29,
      "to": 30,
-     "label": "여름 빙과전"
+     "label": "여름 가전전"
     },
     {
      "from": 81,
      "to": 82,
-     "label": "여름 빙과전"
+     "label": "여름 가전전"
     }
    ],
    "disposal": [
@@ -4491,7 +4491,7 @@ window.DATA={
      "kind": "chehwa",
      "title": "체화 편입 → 처분",
      "detail": [
-      "'25 W44 편입 · 6,672만원",
+      "'25 W44 편입 · 7,745만원",
       "'25 W46 처분 시작 (시즌 종료)"
      ],
      "no": 3
@@ -4513,7 +4513,7 @@ window.DATA={
      "kind": "chehwa",
      "title": "체화 편입 → 처분",
      "detail": [
-      "'26 W42 편입 · 5,520만원",
+      "'26 W42 편입 · 6,408만원",
       "'26 W44 처분 시작 (시즌 종료)"
      ],
      "no": 5
@@ -5605,8 +5605,8 @@ window.DATA={
      0,
      0,
      0,
-     1601600,
-     1579200,
+     1859000,
+     1833000,
      0,
      0,
      0,
@@ -5666,12 +5666,12 @@ window.DATA={
       0
      ],
      "stock_now_won": [
-      45494400,
+      52806000,
       0
      ],
      "chehwa_peak_won": [
-      66724000,
-      1601600
+      77447500,
+      1859000
      ],
      "lost_qty": [
       0,
@@ -5689,20 +5689,20 @@ window.DATA={
    },
    "links": {
     "review": "https://rustyhaa.github.io/import-lifecycle-demo/#SR-2508-03",
-    "disposal": "https://rustyhaa.github.io/disp-lifecycle-site/index.html#item=초코 콘 아이스크림"
+    "disposal": "https://rustyhaa.github.io/disp-lifecycle-site/index.html#item=휴대용 손선풍기"
    }
   },
   {
    "id": "P04",
-   "name": "딸기 파인트 아이스크림",
-   "dept": "냉동·유제품",
-   "cat": "아이스크림",
+   "name": "모기 기피 스프레이",
+   "dept": "일상용품",
+   "cat": "생활용품",
    "source": "직매입",
    "type_no": 3,
    "type_name": "계절성(여름 정점)",
    "good": true,
    "n_stores": 110,
-   "cost_won": 7000,
+   "cost_won": 4500,
    "headline": "정점 전에 발주를 줄여 시즌을 깨끗이 마감",
    "chehwa_path": "행사 매입",
    "chehwa": [],
@@ -6989,20 +6989,20 @@ window.DATA={
    },
    "links": {
     "review": "https://rustyhaa.github.io/import-lifecycle-demo/#SR-2510-01",
-    "disposal": "https://rustyhaa.github.io/disp-lifecycle-site/lifecycle.html#item=딸기 파인트 아이스크림"
+    "disposal": "https://rustyhaa.github.io/disp-lifecycle-site/lifecycle.html#item=모기 기피 스프레이"
    }
   },
   {
    "id": "P05",
-   "name": "얼큰 봉지라면 5입",
-   "dept": "가공식품",
-   "cat": "봉지라면",
+   "name": "극세사 담요",
+   "dept": "리빙",
+   "cat": "침구",
    "source": "직매입",
    "type_no": 4,
    "type_name": "하락 후 재상승(겨울 정점)",
    "good": false,
    "n_stores": 114,
-   "cost_won": 3800,
+   "cost_won": 9900,
    "headline": "여름 저점에 처분, 겨울엔 품절",
    "chehwa_path": "바이어 예외발주",
    "chehwa": [
@@ -7834,19 +7834,19 @@ window.DATA={
     0,
     0,
     0,
-    26045200,
-    25057200,
-    24004600,
-    23001400,
-    22078000,
-    21017800,
-    19877800,
-    18802400,
-    17525600,
-    16416000,
-    15154400,
-    13733200,
-    11810400,
+    67854600,
+    65280600,
+    62538300,
+    59924700,
+    57519000,
+    54756900,
+    51786900,
+    48985200,
+    45658800,
+    42768000,
+    39481200,
+    35778600,
+    30769200,
     0,
     0,
     0,
@@ -7945,7 +7945,7 @@ window.DATA={
      "kind": "chehwa",
      "title": "여름 저점에 체화 판정 → 처분",
      "detail": [
-      "'25 W28 편입 · 2,605만원",
+      "'25 W28 편입 · 6,785만원",
       "처분 배수 1.2배 · '25 W41 해제"
      ],
      "no": 2
@@ -9032,19 +9032,19 @@ window.DATA={
      0,
      0,
      0,
-     1045000,
-     1033600,
-     908200,
-     1048800,
-     1178000,
-     1086800,
-     1048800,
-     1231200,
-     1368000,
-     1691000,
-     1778400,
-     2135600,
-     2086200,
+     2722500,
+     2692800,
+     2366100,
+     2732400,
+     3069000,
+     2831400,
+     2732400,
+     3207600,
+     3564000,
+     4405500,
+     4633200,
+     5563800,
+     5435100,
      0,
      0,
      0,
@@ -9109,12 +9109,12 @@ window.DATA={
       944
      ],
      "stock_now_won": [
-      8090200,
-      3587200
+      21077100,
+      9345600
      ],
      "chehwa_peak_won": [
-      26045200,
-      2135600
+      67854600,
+      5563800
      ],
      "lost_qty": [
       4363,
@@ -9132,14 +9132,14 @@ window.DATA={
    },
    "links": {
     "review": "https://rustyhaa.github.io/import-lifecycle-demo/#SR-2511-04",
-    "disposal": "https://rustyhaa.github.io/disp-lifecycle-site/index.html#item=얼큰 봉지라면 5입"
+    "disposal": "https://rustyhaa.github.io/disp-lifecycle-site/index.html#item=극세사 담요"
    }
   },
   {
    "id": "P06",
    "name": "트러플 감자스낵",
    "dept": "가공식품",
-   "cat": "스낵",
+   "cat": "과자",
    "source": "직매입",
    "type_no": 5,
    "type_name": "실적이 짧은 신상품",
@@ -11253,15 +11253,15 @@ window.DATA={
   },
   {
    "id": "P07",
-   "name": "짜장 봉지라면 멀티팩",
-   "dept": "가공식품",
-   "cat": "봉지라면",
+   "name": "주방세제 1+1 기획팩",
+   "dept": "주방",
+   "cat": "주방세제",
    "source": "직매입",
    "type_no": 6,
    "type_name": "행사(급등) 영향",
    "good": false,
    "n_stores": 34,
-   "cost_won": 6500,
+   "cost_won": 4900,
    "headline": "세 번째 행사 물량이 남음",
    "chehwa_path": "행사 매입",
    "chehwa": [
@@ -12155,14 +12155,14 @@ window.DATA={
     0,
     0,
     0,
-    28275000,
-    25532000,
-    22210500,
-    18674500,
-    15047500,
-    11505000,
-    8567000,
-    4933500
+    21315000,
+    19247200,
+    16743300,
+    14077700,
+    11343500,
+    8673000,
+    6458200,
+    3719100
    ],
    "status": [
     {
@@ -12185,17 +12185,17 @@ window.DATA={
     {
      "from": 70,
      "to": 72,
-     "label": "라면 행사 1"
+     "label": "주방세제 행사 1"
     },
     {
      "from": 78,
      "to": 79,
-     "label": "라면 행사 2"
+     "label": "주방세제 행사 2"
     },
     {
      "from": 83,
      "to": 84,
-     "label": "라면 행사 3"
+     "label": "주방세제 행사 3"
     }
    ],
    "disposal": [
@@ -12269,7 +12269,7 @@ window.DATA={
      "kind": "chehwa",
      "title": "체화 편입 → 처분",
      "detail": [
-      "'26 W38 편입 · 2,828만원",
+      "'26 W38 편입 · 2,132만원",
       "'26 W40 처분 시작 (행사 잔량)"
      ],
      "no": 6
@@ -13422,11 +13422,11 @@ window.DATA={
       0
      ],
      "stock_now_won": [
-      4933500,
+      3719100,
       0
      ],
      "chehwa_peak_won": [
-      28275000,
+      21315000,
       0
      ],
      "lost_qty": [
@@ -13445,7 +13445,7 @@ window.DATA={
    },
    "links": {
     "review": "https://rustyhaa.github.io/import-lifecycle-demo/#SR-2615-01",
-    "disposal": "https://rustyhaa.github.io/disp-lifecycle-site/index.html#item=짜장 봉지라면 멀티팩"
+    "disposal": "https://rustyhaa.github.io/disp-lifecycle-site/index.html#item=주방세제 1+1 기획팩"
    }
   },
   {
