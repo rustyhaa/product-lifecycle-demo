@@ -31,7 +31,7 @@ window.DATA={
   ],
   "links": {
    "review": "https://rustyhaa.github.io/import-lifecycle-demo/",
-   "disposal": "https://disp-lifecycle-site.vercel.app/"
+   "disposal": "https://rustyhaa.github.io/disp-lifecycle-site/"
   }
  },
  "products": [
@@ -1079,7 +1079,7 @@ window.DATA={
    },
    "links": {
     "review": "https://rustyhaa.github.io/import-lifecycle-demo/#SR-2536-01",
-    "disposal": "https://disp-lifecycle-site.vercel.app/index.html#item=멸균우유 24입"
+    "disposal": "https://rustyhaa.github.io/disp-lifecycle-site/index.html#item=멸균우유 24입"
    }
   },
   {
@@ -2071,7 +2071,7 @@ window.DATA={
    },
    "links": {
     "review": "https://rustyhaa.github.io/import-lifecycle-demo/#SR-2506-02",
-    "disposal": "https://disp-lifecycle-site.vercel.app/lifecycle.html#item=바닐라 바 아이스크림"
+    "disposal": "https://rustyhaa.github.io/disp-lifecycle-site/lifecycle.html#item=바닐라 바 아이스크림"
    }
   },
   {
@@ -2999,8 +2999,13 @@ window.DATA={
     },
     {
      "from": 22,
-     "to": 97,
+     "to": 89,
      "label": "정상"
+    },
+    {
+     "from": 90,
+     "to": 97,
+     "label": "발주종료"
     }
    ],
    "promo": [
@@ -3135,7 +3140,7 @@ window.DATA={
    },
    "links": {
     "review": "https://rustyhaa.github.io/import-lifecycle-demo/#SR-2508-03",
-    "disposal": "https://disp-lifecycle-site.vercel.app/index.html#item=초코 콘 아이스크림"
+    "disposal": "https://rustyhaa.github.io/disp-lifecycle-site/index.html#item=초코 콘 아이스크림"
    }
   },
   {
@@ -3640,14 +3645,14 @@ window.DATA={
      1984,
      2072,
      1664,
-     1336,
-     1328,
-     979,
-     800,
-     633,
-     548,
-     472,
-     472
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
     ]
    },
    "sale": [
@@ -3740,14 +3745,14 @@ window.DATA={
     2251,
     2205,
     2238,
-    1336,
-    1328,
-    979,
-    800,
-    633,
-    548,
-    472,
-    472
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
    ],
    "stock_center": [
     0,
@@ -4054,8 +4059,13 @@ window.DATA={
     },
     {
      "from": 24,
-     "to": 97,
+     "to": 89,
      "label": "정상"
+    },
+    {
+     "from": 90,
+     "to": 97,
+     "label": "발주종료"
     }
    ],
    "promo": [],
@@ -4127,7 +4137,7 @@ window.DATA={
    },
    "links": {
     "review": "https://rustyhaa.github.io/import-lifecycle-demo/#SR-2510-01",
-    "disposal": "https://disp-lifecycle-site.vercel.app/lifecycle.html#item=딸기 파인트 아이스크림"
+    "disposal": "https://rustyhaa.github.io/disp-lifecycle-site/lifecycle.html#item=딸기 파인트 아이스크림"
    }
   },
   {
@@ -5147,7 +5157,7 @@ window.DATA={
    },
    "links": {
     "review": "https://rustyhaa.github.io/import-lifecycle-demo/#SR-2511-04",
-    "disposal": "https://disp-lifecycle-site.vercel.app/index.html#item=얼큰 봉지라면 5입"
+    "disposal": "https://rustyhaa.github.io/disp-lifecycle-site/index.html#item=얼큰 봉지라면 5입"
    }
   },
   {
@@ -6140,7 +6150,7 @@ window.DATA={
    },
    "links": {
     "review": "https://rustyhaa.github.io/import-lifecycle-demo/#SR-2631-02",
-    "disposal": "https://disp-lifecycle-site.vercel.app/lifecycle.html#item=트러플 감자스낵"
+    "disposal": "https://rustyhaa.github.io/disp-lifecycle-site/lifecycle.html#item=트러플 감자스낵"
    }
   },
   {
@@ -7214,7 +7224,7 @@ window.DATA={
    },
    "links": {
     "review": "https://rustyhaa.github.io/import-lifecycle-demo/#SR-2615-01",
-    "disposal": "https://disp-lifecycle-site.vercel.app/index.html#item=짜장 봉지라면 멀티팩"
+    "disposal": "https://rustyhaa.github.io/disp-lifecycle-site/index.html#item=짜장 봉지라면 멀티팩"
    }
   },
   {
@@ -7723,10 +7733,10 @@ window.DATA={
      305,
      298,
      283,
-     289,
-     292,
-     285,
-     285
+     0,
+     0,
+     0,
+     0
     ]
    },
    "sale": [
@@ -8021,10 +8031,10 @@ window.DATA={
     2187,
     2104,
     2014,
-    1949,
-    1880,
-    1800,
-    1729
+    1660,
+    1299,
+    934,
+    578
    ],
    "chehwa_won": [
     0,
@@ -8133,8 +8143,13 @@ window.DATA={
     },
     {
      "from": 32,
-     "to": 97,
+     "to": 93,
      "label": "정상"
+    },
+    {
+     "from": 94,
+     "to": 97,
+     "label": "발주종료"
     }
    ],
    "promo": [
@@ -8198,33 +8213,33 @@ window.DATA={
     "top": [
      {
       "name": "점포 A",
-      "qty": 117,
+      "qty": 40,
       "verdict": null
      },
      {
       "name": "점포 B",
-      "qty": 60,
+      "qty": 20,
       "verdict": null
      },
      {
       "name": "점포 C",
-      "qty": 60,
+      "qty": 20,
       "verdict": null
      },
      {
       "name": "점포 D",
-      "qty": 57,
+      "qty": 19,
       "verdict": null
      },
      {
       "name": "점포 E",
-      "qty": 51,
+      "qty": 18,
       "verdict": null
      }
     ],
     "rest": {
      "n": 107,
-     "qty": 1384
+     "qty": 461
     },
     "verdict_counts": null
    },
@@ -8237,7 +8252,7 @@ window.DATA={
    },
    "links": {
     "review": "https://rustyhaa.github.io/import-lifecycle-demo/#SR-2519-02",
-    "disposal": "https://disp-lifecycle-site.vercel.app/lifecycle.html#item=매운 컵라면"
+    "disposal": "https://rustyhaa.github.io/disp-lifecycle-site/lifecycle.html#item=매운 컵라면"
    }
   }
  ],
