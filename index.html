@@ -18,7 +18,8 @@
  --k-review:#A9B6CC;--k-exception:#E66767;--k-auto:#5D6676;--k-store:#7D8696;--down:#5D6676;--link:#8FB8F3;--hl:rgba(255,255,255,.06)}
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--page);color:var(--ink)}
-body{font-family:Pretendard,"Pretendard Variable",-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-size:14px;line-height:1.5;font-feature-settings:"tnum"}
+body{font-family:Pretendard,"Pretendard Variable",-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-size:14px;line-height:1.5;font-feature-settings:"tnum";word-break:keep-all;overflow-wrap:break-word}
+h1,h2,.q,.lead,.note,.one,.cfr{text-wrap:pretty}
 svg text{font-family:inherit;font-feature-settings:"tnum"}
 button{font-family:inherit;cursor:pointer}
 a{color:var(--link)}
@@ -37,7 +38,10 @@ h1{font-size:28px;margin:4px 0 8px;font-weight:700;letter-spacing:-.01em}
 h1 small{font-size:18px;color:var(--mut);font-weight:500;margin-left:8px}
 .top{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap}
 .asof{font-size:12px;color:var(--mut);text-align:right;margin-top:6px}
-.lead{font-size:18px;line-height:1.6;font-weight:500;margin:6px 0 18px;max-width:1200px}
+.lead{font-size:18px;line-height:1.65;font-weight:500;margin:8px 0 20px;max-width:1100px}
+.lead .ln{display:block}
+.lead .ln+.ln{margin-top:2px}
+.lead .ln.m{font-size:16px;margin-top:8px}
 .lead b{font-weight:700}.lead .r{color:var(--bad)}.lead .m{color:var(--ink2);font-weight:400}
 .kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:18px}
 .kpi{background:var(--card);padding:14px 18px}
@@ -247,7 +251,7 @@ function renderHome(D){
  const paths=Object.entries(S.path).sort((a,b)=>b[1]-a[1]),pathSum=sum(paths.map(p=>p[1]));
  const listIn=sum(S.items.map(i=>i.pin)),allIn=sum(S.inn);
  $('h-asof').innerHTML=`${wl(m.summary_from_week)}~${wl(m.summary_to_week)} · 전 점포 + 센터 · 원가 기준`;
- $('h-lead').innerHTML=`12주 동안 체화재고가 <b class="r">${eok(Math.abs(net))}억 ${net>=0?'늘어':'줄어'} ${f(end/1e8)}억</b>이 됐습니다. 증가분의 ${Math.round(share2*100)}%가 <b>${top2.map(d=>d.dept).join('·')}</b>에서 나왔고, 입고 유형으로는 <b>${paths[0][0]}</b>${ga(paths[0][0]).slice(-1)} 가장 큽니다. <span class="m">상품 한 장이 있는 ${S.items.length}개 상품이 신규 편입의 ${Math.round(listIn/allIn*100)}%이고, 나머지는 ${f(S.nOthers)}개 상품에 흩어져 있습니다.</span>`;
+ $('h-lead').innerHTML=`<span class="ln">12주 동안 체화재고가 <b class="r">${eok(Math.abs(net))}억 ${net>=0?'늘어':'줄어'} ${f(end/1e8)}억</b>이 됐습니다.</span><span class="ln">증가분의 ${Math.round(share2*100)}%가 <b>${top2.map(d=>d.dept).join('·')}</b>에서 나왔고, 입고 유형으로는 <b>${paths[0][0]}</b>${ga(paths[0][0]).slice(-1)} 가장 큽니다.</span><span class="ln m">상품 한 장이 있는 ${S.items.length}개 상품이 신규 편입의 ${Math.round(listIn/allIn*100)}%이고, 나머지는 ${f(S.nOthers)}개 상품에 흩어져 있습니다.</span>`;
  const K=[['체화재고 총액',f(end/1e8),'억원',`12주 전 ${f(start/1e8)}억`,'hot'],['12주 순증',sgn(net,v=>eok(v)),'억원',`편입 ${eok(sum(S.inn))} · 처리 ${eok(sum(S.out))}`,net>0?'hot':''],
   ['이번 주 신규 편입',eok(S.inn[last]),'억원',`12주 평균 ${eok(sum(S.inn)/12)}`,''],['이번 주 처리',eok(S.out[last]),'억원',`12주 평균 ${eok(sum(S.out)/12)}`,''],
   ['목표까지',sgn(end-S.target,v=>eok(v)),'억원',`목표 ${f(S.target/1e8)}억`,'']];
@@ -415,6 +419,7 @@ function drawChart(D,p){
  p.promo.forEach(s=>shade(s.from,s.to,C.promo,.10));p.disposal.forEach(s=>shade(s.from,s.to,C.bad,.07));
  // 레인
  const P={band:{y:92,h:78},inb:{y:208,h:84},sal:{y:328,h:96},stk:{y:462,h:122},chw:{y:626,h:66}};
+ svg._geo={L,R,step,N,W:W.slice(),P,TOP,BOT};   // 둘러보기가 줄·주 위치를 찾을 때 씀
  const lab=(q,t,u)=>{el('text',{x:0,y:q.y+13,'font-size':13,'font-weight':600,fill:C.ink},t);if(u)el('text',{x:0,y:q.y+31,'font-size':11.5,fill:C.mut},u)};
  const legend=(q,items)=>{let X=R;items.slice().reverse().forEach(([t,col])=>{const tx=el('text',{x:0,y:q.y-9,'font-size':11.5,fill:C.ink2},t);const w=tx.getComputedTextLength();X-=w;tx.setAttribute('x',X);X-=14;el('rect',{x:X,y:q.y-18,width:9,height:9,rx:2.5,fill:col});X-=14})};
  const axis=(q,max,fmt)=>{fmt=fmt||(t=>t>=1e4?f(t/1e4)+'만':f(t));[0,max/2,max].forEach(t=>{const yy=q.y+q.h-q.h*t/max;el('line',{x1:L,x2:R,y1:yy,y2:yy,stroke:C.line,'stroke-width':1});el('text',{x:R+8,y:yy+4,'font-size':11,fill:C.mut},fmt(t))});return v=>q.y+q.h-q.h*v/max};
@@ -518,7 +523,7 @@ function route(){
  if(!DATA)return;const h=location.hash||'#/',mm=h.match(/^#\/p\/(\w+)/);
  $('v-home').classList.toggle('hidden',!!mm);$('v-prod').classList.toggle('hidden',!mm);
  $('nav-home').classList.toggle('on',!mm);$('nav-prod').classList.toggle('on',!!mm);
- if(mm){if(mm[1]!==curPid){curEvent=null;hoverI=null}curPid=mm[1];renderProduct(DATA,curPid);window.scrollTo(0,0)}
+ if(mm){const nw=mm[1]!==curPid;if(nw){curEvent=null;hoverI=null}curPid=mm[1];renderProduct(DATA,curPid);if(nw)window.scrollTo(0,0)}
  else{if(!curPid)$('nav-prod').href='#/p/'+DATA.products[0].id;renderHome(DATA)}
 }
 function applyTheme(t){document.documentElement.dataset.theme=t;$('theme').textContent=t==='dark'?'밝은 판':'어두운 판';}
