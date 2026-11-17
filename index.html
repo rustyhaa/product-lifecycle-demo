@@ -111,6 +111,11 @@ tr.sel td{background:var(--hl)}
 .evl li.k-alert .n,.evl li.k-chehwa .n{background:var(--bad);color:#fff}
 .evl li.k-good .n{background:var(--good);color:#fff}
 .evl b{font-size:13px;font-weight:600}.evl span{display:block;font-size:12px;color:var(--ink2)}
+.cfbtn{border:1.5px solid var(--good);background:var(--card);color:var(--goodink);font-size:12.5px;font-weight:600;border-radius:8px;padding:5px 12px;margin-left:auto}
+.cfbtn.on{background:var(--good);color:#fff}.cfbtn:disabled{border-color:var(--line);color:var(--mut);cursor:not-allowed}
+.ctool{gap:8px}
+.cft{width:100%;font-size:12.5px;margin-top:8px}.cft td,.cft th{padding:6px 4px}.cft .g{color:var(--goodink);font-weight:700}.cft .b{color:var(--bad);font-weight:700}
+.cfr{font-size:12px;color:var(--ink2);line-height:1.6;background:var(--tile);border-radius:8px;padding:8px 10px}
 .foot{font-size:12px;color:var(--mut);margin-top:16px}
 .hidden{display:none!important}
 @media (max-width:1180px){.hgrid,.pgrid{grid-template-columns:minmax(0,1fr)}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
@@ -118,6 +123,7 @@ tr.sel td{background:var(--hl)}
 </style>
 </head>
 <body>
+<script src="lifebar.js" data-site="product"></script>
 <div class="bar">
  <span class="brand">재고 생애</span>
  <nav><a href="#/" id="nav-home">요약 한 장</a><a href="#" id="nav-prod">상품 한 장</a></nav>
@@ -155,14 +161,14 @@ tr.sel td{background:var(--hl)}
   <div><div class="crumb"><a href="#/">요약 한 장</a> › <span id="p-dept"></span> › 상품 한 장</div>
    <h1 id="p-name"></h1><div class="chips" id="p-chips"></div></div>
   <div><div class="asof" id="p-asof"></div>
-   <div class="btns"><a class="btn" href="#/">← 요약 한 장</a><a class="btn" id="p-lk-review" target="_blank" rel="noopener">품의 추적에서 보기</a><a class="btn" id="p-lk-disp" target="_blank" rel="noopener">처분 화면에서 보기</a></div></div>
+   <div class="btns"><a class="btn" href="#/">← 요약 한 장</a><a class="btn" id="p-lk-review">품의 추적에서 보기</a><a class="btn" id="p-lk-disp">처분 화면에서 보기</a></div></div>
  </div>
  <div class="ptabs" id="p-tabs" style="margin-top:14px"></div>
  <div class="kpis" id="p-kpis"></div>
  <div class="pgrid">
   <div class="card">
    <div class="ctool"><h2 style="margin:0">주별 이력 <small id="p-range"></small></h2>
-    <div class="seg" id="p-view"><button type="button" data-v="chart" class="on">그래프</button><button type="button" data-v="table">표</button></div></div>
+    <button type="button" id="p-cf" class="cfbtn">유형대로 발주했다면</button><div class="seg" id="p-view"><button type="button" data-v="chart" class="on">그래프</button><button type="button" data-v="table">표</button></div></div>
    <div class="readout" id="p-readout"></div>
    <div id="chartbox"><svg id="chart" height="720"></svg></div>
    <div class="tbl hidden" id="p-table"></div>
@@ -170,6 +176,7 @@ tr.sel td{background:var(--hl)}
   </div>
   <div>
    <div class="card"><h2>남은 재고는 어디에 있나 <small id="p-st-s"></small></h2><div id="p-split"></div><div id="p-stores"></div><div class="note" id="p-st-note"></div></div>
+   <div class="card" id="p-cf-card"><h2>유형대로 발주했다면 <small>비교 시나리오 · 가상</small></h2><div id="p-cf-body"></div></div>
    <div class="card"><h2>사건 <small>규칙(경보·판정)에 걸린 주</small></h2><ul class="evl" id="p-events"></ul></div>
    <div class="card"><h2>앞단 <small>품의</small></h2><div class="one" id="p-front"></div><div class="link" id="p-front-lk"></div></div>
    <div class="card"><h2>뒷단 <small>처분</small></h2><div id="p-back"></div><div class="link" id="p-back-lk"></div></div>
@@ -303,7 +310,7 @@ function renderHome(D){
 }
 
 // ---------- 상품 한 장 ----------
-let curEvent=null,curView='chart',hoverI=null;
+let curEvent=null,curView='chart',hoverI=null,cfOn=false;
 function pStats(p){
  const N=p.weeks.length,last=N-1,ctr=p.stock_center,sto=p.stock_store,tot=ctr.map((v,i)=>v+sto[i]);
  const inTot=p.weeks.map((_,i)=>sum(Object.values(p.inbound).map(a=>a[i])));
@@ -348,15 +355,24 @@ function renderProduct(D,id){
  // 사건
  $('p-events').innerHTML=p.events.map(e=>`<li data-no="${e.no}" class="k-${e.kind} ${curEvent===e.no?'on':''}"><div class="n">${e.no}</div><div><b>${e.title}</b><span>${e.week===e.to?wl(e.week):wl(e.week)+'~'+wl(e.to)} · ${e.detail.join(' · ')}</span></div></li>`).join('');
  $('p-events').querySelectorAll('li').forEach(li=>li.onclick=()=>toggleEvent(D,p,+li.dataset.no));
+ // 유형대로 발주했다면
+ const cfb=$('p-cf'),cf=p.cf||{has:false,rule:''};cfb.disabled=!cf.has;cfb.classList.toggle('on',cfOn&&cf.has);cfb.textContent=cfOn&&cf.has?'유형대로 발주했다면 · 켜짐':'유형대로 발주했다면';
+ if(cf.has){const c=cf.cmp,row=(lab,a,b,fmt,unit)=>{const d=b-a,cls=d<0?'g':d>0?'b':'';return `<tr><td>${lab}</td><td class="r">${fmt(a)}${unit}</td><td class="r ${cls}">${fmt(b)}${unit}</td></tr>`};
+  $('p-cf-body').innerHTML=`<div class="cfr">${cf.rule}</div><table class="cft"><thead><tr><th></th><th class="r">실제</th><th class="r">유형대로라면</th></tr></thead><tbody>`
+   +row('지금 남은 재고',c.stock_now[0],c.stock_now[1],f,'개')+row('지금 재고 금액',c.stock_now_won[0],c.stock_now_won[1],man,'만원')+row('체화 금액(최대)',c.chehwa_peak_won[0],c.chehwa_peak_won[1],man,'만원')
+   +row('발주 기간 품절로 못 판 수량',c.lost_qty[0],c.lost_qty[1],f,'개')+row('입고 합계',c.inbound_qty[0],c.inbound_qty[1],f,'개')
+   +`</tbody></table><div class="note">초록 = 실제보다 줄어듦, 빨강 = 늘어남. 판매 수요는 같고 입고만 바꿔 다시 계산한 가상 결과입니다.</div><button type="button" class="cfbtn ${cfOn?'on':''}" id="p-cf2" style="margin-top:10px;width:100%">${cfOn?'그래프에서 끄기':'그래프에 겹쳐 보기'}</button>`;
+  $('p-cf2').onclick=()=>{cfOn=!cfOn;renderProduct(D,p.id)}}
+ else $('p-cf-body').innerHTML=`<div class="cfr">${cf.rule||'비교 시나리오 없음'}</div><div class="note">재고가 판매를 따라가고 체화가 없어, 유형 정상 모양과 비교해도 바꿀 발주가 없습니다.</div>`;
  // 앞단
  if(p.review){const r=p.review,si=W.indexOf(r.start_week);let cum=0,k80=null;for(let i=si;i<N;i++){cum+=p.sale[i];if(k80===null&&cum>=r.agreed_qty*.8)k80=i-si+1}
   const pct=Math.round(r.inbound_qty/r.agreed_qty*100),late=k80===null||k80>r.expected_weeks;
   $('p-front').innerHTML=`품의 <b>${r.no}</b> · 합의 <b>${f(r.agreed_qty)}개</b> → 입고 <span class="${pct>100?'bad':''}">${f(r.inbound_qty)}개 (${pct}%)</span><br>80% 판매 도달 <span class="${late?'bad':'good'}">${k80===null?`미도달 (지금 ${Math.round(cum/r.agreed_qty*100)}%)`:k80+'주'}</span> · 예상 ${r.expected_weeks}주`;
-  const rU=(p.links&&p.links.review)||m.links.review;$('p-front-lk').innerHTML=`<a href="${rU}" target="_blank" rel="noopener">품의 추적에서 이 상품 보기</a><a href="${rU}" target="_blank" rel="noopener">→</a>`}
+  const rU=(p.links&&p.links.review)||m.links.review;$('p-front-lk').innerHTML=`<a href="${rU}">품의 추적에서 이 상품 보기</a><a href="${rU}">→</a>`}
  else{$('p-front').innerHTML=`품의 대상이 아닌 상품입니다 (${p.source}).`;$('p-front-lk').innerHTML=`<span class="off">품의 추적 화면 해당 없음</span><span class="off">→</span>`}
  // 뒷단
  const dl=$('p-lk-disp'),dU=(p.links&&p.links.disposal)||m.links.disposal;
- if(dU){dl.href=dU;dl.removeAttribute('aria-disabled');dl.title='처분 화면(새 창)';$('p-back-lk').innerHTML=`<a href="${dU}" target="_blank" rel="noopener">처분 화면에서 이 상품 보기</a><a href="${dU}" target="_blank" rel="noopener">→</a>`}
+ if(dU){dl.href=dU;dl.removeAttribute('aria-disabled');dl.title='처분 화면';$('p-back-lk').innerHTML=`<a href="${dU}">처분 화면에서 이 상품 보기</a><a href="${dU}">→</a>`}
  else{dl.removeAttribute('href');dl.setAttribute('aria-disabled','true');dl.title='처분 화면 링크 없음';$('p-back-lk').innerHTML=`<span class="off">처분 화면 링크 없음</span><span class="off">→</span>`}
  if(p.disposal.length){const d=p.disposal[p.disposal.length-1],vc=p.stores.verdict_counts||{};
   $('p-back').innerHTML=`<div class="one">처분 ${d.round}차(${d.kind}) · ${wl(d.from)} 시작 · ${d.ended?wl(d.to)+' 종료':(W[last]-d.from+1)+'주째'} · 처분 점포 <b>${f(sum(Object.values(vc)))}곳</b></div><div class="vd"><span><b class="i-good">${vc['반응']||0}</b>반응</span><span><b class="i-bad">${vc['무반응']||0}</b>무반응</span><span><b>${vc['보류']||0}</b>보류</span></div>`}
@@ -380,7 +396,7 @@ function weekText(p,i,D){
 }
 function readout(D,p,i){
  const t=weekText(p,i,D);
- $('p-readout').innerHTML=`<span><b>${wl(t.w)}</b></span><span>상태 <b>${t.status}</b></span><span>행사 <b>${t.promo}</b></span><span>체화·처분 <b>${t.disp}</b></span><span>입고 <b>${t.inbound}</b></span><span>판매 <b>${f(t.sale)}</b></span><span><i class="sw" style="background:var(--ctr)"></i>센터 <b>${f(t.ctr)}</b> · <i class="sw" style="background:var(--sto)"></i>점포 <b>${f(t.sto)}</b></span><span>체화 <b>${t.chw?man(t.chw)+'만원':'—'}</b></span>`;
+ $('p-readout').innerHTML=`<span><b>${wl(t.w)}</b></span><span>상태 <b>${t.status}</b></span><span>행사 <b>${t.promo}</b></span><span>체화·처분 <b>${t.disp}</b></span><span>입고 <b>${t.inbound}</b></span><span>판매 <b>${f(t.sale)}</b>${p.band?` <span style="color:var(--mut)">(정상 ${f(p.band.p25[i])}~${f(p.band.p75[i])})</span>`:''}</span><span><i class="sw" style="background:var(--ctr)"></i>센터 <b>${f(t.ctr)}</b> · <i class="sw" style="background:var(--sto)"></i>점포 <b>${f(t.sto)}</b></span><span>체화 <b>${t.chw?man(t.chw)+'만원':'—'}</b></span>`;
 }
 
 function drawChart(D,p){
@@ -420,27 +436,35 @@ function drawChart(D,p){
  const bigIn=W.map((_,i)=>i).filter(i=>inTot[i]>=Math.max(...inTot)*.35);
  let lastLbl=-9;bigIn.forEach(i=>{if(i-lastLbl<4)return;lastLbl=i;const lbl=f(inTot[i]),pos=yI(inTot[i])-6;const t=el('text',{x:x(i),y:Math.max(P.inb.y+8,pos),'text-anchor':'middle','font-size':11.5,fill:C.ink2},lbl)});
  // 판매
- lab(P.sal,'판매','개 / 주');legend(P.sal,[['평소',C.neu],...(p.promo.length?[['행사 중',C.promo]]:[]),...(p.disposal.length?[['처분 중',C.bad]]:[])]);
- const yS=axis(P.sal,niceMax(Math.max(...p.sale)));
+ lab(P.sal,'판매','개 / 주');const B=p.band||null;legend(P.sal,[...(B?[['유형 정상 범위',C.mut]]:[]),['평소',C.neu],...(p.promo.length?[['행사 중',C.promo]]:[]),...(p.disposal.length?[['처분 중',C.bad]]:[])]);
+ const yS=axis(P.sal,niceMax(Math.max(...p.sale,...(B?B.p75:[0]))));
+ if(B){let d='';for(let i=0;i<N;i++)d+=(i?'L':'M')+x(i)+','+yS(B.p75[i]);for(let i=N-1;i>=0;i--)d+='L'+x(i)+','+yS(B.p25[i]);el('path',{d:d+'Z',fill:C.ink,opacity:.09});
+  let md='';B.p50.forEach((v,i)=>md+=(i?'L':'M')+x(i)+','+yS(v));el('path',{d:md,fill:'none',stroke:C.ink2,'stroke-width':1.3,'stroke-dasharray':'3 3'})}
  for(let i=0;i<N;i++){const w=W[i],col=segAt(p.promo,w)?C.promo:segAt(p.disposal,w)?C.bad:C.neu,h=P.sal.y+P.sal.h-yS(p.sale[i]);rbar(el,x(i)-bw/2,P.sal.y+P.sal.h-h,bw,h,col)}
+ if(B){const mxb=Math.max(...B.p50),act=i=>B.p50[i]>=Math.max(5,mxb*.05),lo=W.filter((_,i)=>act(i)&&p.sale[i]<B.p25[i]).length,hi=W.filter((_,i)=>act(i)&&p.sale[i]>B.p75[i]).length;
+  el('text',{x:L,y:P.sal.y-9,'font-size':11.5,fill:C.ink2},`유형 ${p.type_no} 정상 범위(같은 유형 25~75%)보다 아래 ${lo}주 · 위 ${hi}주`)}
  const pk=p.sale.indexOf(Math.max(...p.sale));el('text',{x:x(pk),y:yS(p.sale[pk])-6,'text-anchor':'middle','font-size':12,'font-weight':600,fill:C.ink},f(p.sale[pk]));
  // 재고
- lab(P.stk,'재고','개 · 주말 기준');legend(P.stk,[['점포',C.sto],['센터',C.ctr]]);
- const yK=axis(P.stk,niceMax(Math.max(...tot)));
+ const CF=cfOn&&p.cf&&p.cf.has?p.cf:null,ctot=CF?CF.stock_center.map((v,i)=>v+CF.stock_store[i]):null;
+ lab(P.stk,'재고','개 · 주말 기준');legend(P.stk,[['점포',C.sto],['센터',C.ctr],...(CF?[['유형대로라면',C.good]]:[])]);
+ const yK=axis(P.stk,niceMax(Math.max(...tot,...(ctot||[0]))));
  const area=(lo,hi,fill)=>{let d='';for(let i=0;i<N;i++)d+=(i?'L':'M')+x(i)+','+yK(hi[i]);for(let i=N-1;i>=0;i--)d+='L'+x(i)+','+yK(lo[i]);el('path',{d:d+'Z',fill})};
  area(Array(N).fill(0),p.stock_store,C.sto);area(p.stock_store,tot,C.ctr);
  let dl='';p.stock_store.forEach((v,i)=>dl+=(i?'L':'M')+x(i)+','+yK(v));el('path',{d:dl,fill:'none',stroke:C.card,'stroke-width':2});
  el('circle',{cx:x(last),cy:yK(tot[last]),r:4.5,fill:C.ctr,stroke:C.card,'stroke-width':2});
  el('text',{x:x(last)-10,y:yK(tot[last])-10,'text-anchor':'end','font-size':12,'font-weight':600,fill:C.ink},'지금 '+f(tot[last])+'개');
+ if(CF){let cd='';ctot.forEach((v,i)=>cd+=(i?'L':'M')+x(i)+','+yK(v));el('path',{d:cd,fill:'none',stroke:C.good,'stroke-width':2.4,'stroke-dasharray':'6 4','stroke-linejoin':'round'});
+  el('circle',{cx:x(last),cy:yK(ctot[last]),r:4,fill:C.good,stroke:C.card,'stroke-width':2});el('text',{x:x(last)-10,y:yK(ctot[last])+18,'text-anchor':'end','font-size':12,'font-weight':600,fill:C.good},'유형대로라면 '+f(ctot[last])+'개')}
  const mxi=tot.indexOf(Math.max(...tot));el('text',{x:x(mxi)+8,y:yK(tot[mxi])-8,'font-size':12,fill:C.ink2},'최대 '+f(tot[mxi])+'개');
  // 체화
  lab(P.chw,'체화재고','만원 · 원가');
- const chv=p.chehwa_won,cmax=niceMax(Math.max(1e6,...chv)),yC=axis(P.chw,cmax,t=>t>=1e8?(t/1e8).toFixed(t%1e8?1:0)+'억':man(t)+'만');
+ const chv=p.chehwa_won,cmax=niceMax(Math.max(1e6,...chv,...(CF?CF.chehwa_won:[0]))),yC=axis(P.chw,cmax,t=>t>=1e8?(t/1e8).toFixed(t%1e8?1:0)+'억':man(t)+'만');
  (p.chehwa||[]).forEach(c=>{const a=ix(c.from),b=ix(c.to);if(b<a)return;let cl='';for(let i=a;i<=b;i++)cl+=(i>a?'L':'M')+x(i)+','+yC(chv[i]);
   el('path',{d:cl+`L${x(b)},${yC(0)}L${x(a)},${yC(0)}Z`,fill:C.bad,opacity:.14});el('path',{d:cl,fill:'none',stroke:C.bad,'stroke-width':2,'stroke-linejoin':'round'});
   [a,b].forEach(i=>el('circle',{cx:x(i),cy:yC(chv[i]),r:4,fill:C.bad,stroke:C.card,'stroke-width':2}));
   el('text',{x:x(a)-8,y:yC(chv[a])+4,'text-anchor':'end','font-size':12,fill:C.ink2},`편입 ${man(chv[a])}만원`);
   if(b===last)el('text',{x:x(b)-10,y:yC(chv[b])+18,'text-anchor':'end','font-size':12,'font-weight':600,fill:C.ink},`${man(chv[b])}만원`)});
+ if(CF)(p.chehwa||[]).forEach(c=>{const a=ix(c.from),b=ix(c.to);if(b<a)return;let cl='';for(let i=a;i<=b;i++)cl+=(i>a?'L':'M')+x(i)+','+yC(CF.chehwa_won[i]);el('path',{d:cl,fill:'none',stroke:C.good,'stroke-width':2.2,'stroke-dasharray':'6 4'})});
  if(!(p.chehwa||[]).length)el('text',{x:(L+R)/2,y:yC(cmax/2)+4,'text-anchor':'middle','font-size':12,fill:C.mut},'체화된 적 없음');
  // 주 축
  for(let i=0;i<N;i++)if([1,14,27,40].includes(isow(W[i]))||i===last)el('text',{x:x(i),y:BOT+22,'text-anchor':'middle','font-size':11.5,fill:C.mut},wl(W[i]));
@@ -464,9 +488,9 @@ function drawChart(D,p){
   h('rect',{x:X-step/2,y:TOP,width:step,height:BOT-TOP,fill:C.ink,opacity:.06},null,hov);h('line',{x1:X,x2:X,y1:TOP,y2:BOT,stroke:C.ink,'stroke-width':1,opacity:.5},null,hov);
   pill(X,P.band.y+P.band.h/2,`${wl(t.w)} · ${t.status}${t.promo!=='—'?' · 행사':''}${t.disp!=='—'?' · '+t.disp:''}`,true);
   pill(X,P.inb.y+14,t.inTot?`입고 ${f(t.inTot)}개`:'입고 없음');
-  pill(X,P.sal.y+14,`판매 ${f(t.sale)}개`);
+  pill(X,P.sal.y+14,B?`판매 ${f(t.sale)}개 · 정상 ${f(B.p25[i])}~${f(B.p75[i])}`:`판매 ${f(t.sale)}개`);
   h('circle',{cx:X,cy:yK(tot[i]),r:4,fill:C.ctr,stroke:C.card,'stroke-width':2},null,hov);
-  pill(X,P.stk.y+14,`센터 ${f(t.ctr)} · 점포 ${f(t.sto)}`);
+  pill(X,P.stk.y+14,`센터 ${f(t.ctr)} · 점포 ${f(t.sto)}`+(CF?` · 유형대로라면 ${f(ctot[i])}`:''));
   if(t.chw)h('circle',{cx:X,cy:yC(t.chw),r:4,fill:C.bad,stroke:C.card,'stroke-width':2},null,hov);
   pill(X,P.chw.y+12,t.chw?`체화 ${man(t.chw)}만원`:'체화 아님');
   readout(D,p,i)};
@@ -484,8 +508,8 @@ function drawTable(D,p){
  const K=D.meta.kinds,kinds=Object.keys(p.inbound).filter(k=>sum(p.inbound[k])>0),e=curEvent?p.events.find(v=>v.no===curEvent):null;
  const first=p.weeks.findIndex((w,i)=>p.sale[i]||p.stock_center[i]||p.stock_store[i]||Object.values(p.inbound).some(a=>a[i]));
  const rows=p.weeks.map((w,i)=>{if(i<first)return '';const t=weekText(p,i,D),sel=e&&w>=e.week&&w<=e.to;
-  return `<tr class="${sel?'sel':''}"><td>${wl(w)}</td><td class="t">${t.status}</td><td class="t">${t.promo}</td><td class="t">${t.disp}</td>${kinds.map(k=>`<td>${p.inbound[k][i]?f(p.inbound[k][i]):''}</td>`).join('')}<td>${f(t.sale)}</td><td>${f(t.ctr)}</td><td>${f(t.sto)}</td><td>${t.chw?man(t.chw):''}</td></tr>`}).join('');
- $('p-table').innerHTML=`<table><thead><tr><th>주</th><th class="t">상태</th><th class="t">행사</th><th class="t">체화·처분</th>${kinds.map(k=>`<th>입고·${K[k]}</th>`).join('')}<th>판매</th><th>센터 재고</th><th>점포 재고</th><th>체화(만원)</th></tr></thead><tbody>${rows}</tbody></table>`;
+  return `<tr class="${sel?'sel':''}"><td>${wl(w)}</td><td class="t">${t.status}</td><td class="t">${t.promo}</td><td class="t">${t.disp}</td>${kinds.map(k=>`<td>${p.inbound[k][i]?f(p.inbound[k][i]):''}</td>`).join('')}<td>${f(t.sale)}</td><td>${p.band?f(p.band.p25[i])+'~'+f(p.band.p75[i]):''}</td><td>${f(t.ctr)}</td><td>${f(t.sto)}</td><td>${t.chw?man(t.chw):''}</td></tr>`}).join('');
+ $('p-table').innerHTML=`<table><thead><tr><th>주</th><th class="t">상태</th><th class="t">행사</th><th class="t">체화·처분</th>${kinds.map(k=>`<th>입고·${K[k]}</th>`).join('')}<th>판매</th><th>유형 정상 범위</th><th>센터 재고</th><th>점포 재고</th><th>체화(만원)</th></tr></thead><tbody>${rows}</tbody></table>`;
 }
 
 // ---------- 화면 전환 ----------
@@ -499,6 +523,7 @@ function route(){
 }
 function applyTheme(t){document.documentElement.dataset.theme=t;$('theme').textContent=t==='dark'?'밝은 판':'어두운 판';}
 $('theme').onclick=()=>{const t=document.documentElement.dataset.theme==='dark'?'light':'dark';applyTheme(t);store.set('theme',t);route()};
+$('p-cf').addEventListener('click',()=>{if(!DATA||!curPid)return;cfOn=!cfOn;renderProduct(DATA,curPid)});
 $('p-view').addEventListener('click',ev=>{const b=ev.target.closest('button');if(b&&DATA)setView(b.dataset.v,DATA,DATA.products.find(x=>x.id===curPid))});
 let rz;window.addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>{if(DATA&&curPid&&!$('v-prod').classList.contains('hidden')&&curView==='chart')drawChart(DATA,DATA.products.find(x=>x.id===curPid))},120)});
 window.addEventListener('hashchange',route);
