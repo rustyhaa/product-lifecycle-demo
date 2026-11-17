@@ -63,7 +63,9 @@ h1 small{font-size:18px;color:var(--mut);font-weight:500;margin-left:8px}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .chips .chip{font-weight:500;padding:1px 9px}
 /* 홈 */
-.hgrid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) minmax(0,1.05fr);gap:16px;align-items:start}
+.hgrid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) minmax(0,1.05fr);gap:16px;align-items:stretch}
+.hgrid>div{display:flex;flex-direction:column}
+.hgrid>div>.card:last-child{flex:1}
 .item{display:grid;grid-template-columns:24px minmax(0,1fr) auto;gap:10px;padding:10px 8px;margin:0 -8px;border-bottom:1px solid var(--line);align-items:start;border-radius:8px;cursor:pointer;text-decoration:none;color:inherit}
 .item:last-child{border-bottom:0}
 .item:hover{background:var(--hl)}
@@ -83,7 +85,13 @@ h1 small{font-size:18px;color:var(--mut);font-weight:500;margin-left:8px}
 .btns{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:8px}
 .btn{font-size:12.5px;border:1px solid var(--line);color:var(--link);border-radius:8px;padding:6px 12px;font-weight:600;background:var(--card);text-decoration:none}
 .btn[aria-disabled="true"]{color:var(--mut);cursor:not-allowed;border-style:dashed}
-.pgrid{display:grid;grid-template-columns:minmax(0,1fr) 372px;gap:16px;align-items:start}
+.pgrid{display:grid;grid-template-columns:minmax(0,1fr) 372px;gap:16px;align-items:stretch}
+.pcol{display:flex;flex-direction:column;gap:16px;min-width:0}
+.pcol>.card{margin:0}
+.pcol>:last-child{flex:1}
+.pcol>.card{display:flex;flex-direction:column}
+.pcol>.card>.link{margin-top:auto}
+.evc .evl{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:2px 28px;align-content:start}
 .ctool{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px}
 .seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
 .seg button{border:0;background:var(--card);color:var(--ink2);font-size:12.5px;padding:5px 12px}
@@ -170,7 +178,8 @@ tr.sel td{background:var(--hl)}
  <div class="ptabs" id="p-tabs" style="margin-top:14px"></div>
  <div class="kpis" id="p-kpis"></div>
  <div class="pgrid">
-  <div class="card">
+  <div class="pcol">
+  <div class="card" id="p-chart-card">
    <div class="ctool"><h2 style="margin:0">주별 이력 <small id="p-range"></small></h2>
     <button type="button" id="p-cf" class="cfbtn">유형대로 발주했다면</button><div class="seg" id="p-view"><button type="button" data-v="chart" class="on">그래프</button><button type="button" data-v="table">표</button></div></div>
    <div class="readout" id="p-readout"></div>
@@ -178,10 +187,11 @@ tr.sel td{background:var(--hl)}
    <div class="tbl hidden" id="p-table"></div>
    <div class="note">그래프에 마우스를 올리면 그 주의 값이 모든 줄에 뜹니다. 번호(또는 오른쪽 사건 목록)를 누르면 그 구간이 강조되고, 다시 누르면 풀립니다.</div>
   </div>
-  <div>
+   <div class="card evc"><h2>사건 <small>규칙(경보·판정)에 걸린 주</small></h2><ul class="evl" id="p-events"></ul></div>
+  </div>
+  <div class="pcol">
    <div class="card"><h2>남은 재고는 어디에 있나 <small id="p-st-s"></small></h2><div id="p-split"></div><div id="p-stores"></div><div class="note" id="p-st-note"></div></div>
    <div class="card" id="p-cf-card"><h2>유형대로 발주했다면 <small>비교 시나리오 · 가상</small></h2><div id="p-cf-body"></div></div>
-   <div class="card"><h2>사건 <small>규칙(경보·판정)에 걸린 주</small></h2><ul class="evl" id="p-events"></ul></div>
    <div class="card"><h2>앞단 <small>품의</small></h2><div class="one" id="p-front"></div><div class="link" id="p-front-lk"></div></div>
    <div class="card"><h2>뒷단 <small>처분</small></h2><div id="p-back"></div><div class="link" id="p-back-lk"></div></div>
   </div>
